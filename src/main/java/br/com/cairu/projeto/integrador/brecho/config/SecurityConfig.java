@@ -21,6 +21,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/user/{id}").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/user/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
+                .requestMatchers(HttpMethod.GET, "/category/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/category/all").permitAll()
+                .requestMatchers(HttpMethod.DELETE, "/category/{id}").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/category/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/category/register").permitAll()
                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

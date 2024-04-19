@@ -17,29 +17,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Data
-@Entity(name = "user")
-@Table(name = "user")
-public class User {
+@Entity(name = "category")
+@Table(name = "category")
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "Varchar(80)")
-    private String name;
-
     @Column(nullable = false, unique = true, columnDefinition = "Varchar(80)")
-    private String email;
-
-    @Column(nullable = false, unique = true, columnDefinition = "Varchar(14)")
-    private String cpf;
-
-    @Column(nullable = false, columnDefinition = "Varchar(80)")
-    private String password;
-
-    @Column(nullable = false)
-    private boolean isAdmin;
-
-    @Column(nullable = false, unique = true, columnDefinition = "Varchar(15)")
-    private String phone;
+    private String name;
 }
