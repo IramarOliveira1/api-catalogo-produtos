@@ -20,17 +20,20 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Data
-@Entity(name = "category")
-@Table(name = "category")
-public class Category {
+@Entity(name = "file")
+@Table(name = "file")
+public class File {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, columnDefinition = "Varchar(80)")
+    @Column(nullable = false)
+    private String url;
+
+    @Column(nullable = false, columnDefinition = "Varchar(80)")
     private String name;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "file")
     private List<Product> products;
 }

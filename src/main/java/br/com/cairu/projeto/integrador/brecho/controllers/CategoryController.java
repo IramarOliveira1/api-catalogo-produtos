@@ -23,8 +23,8 @@ public class CategoryController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<Object> register(@RequestBody Category user) {
-        return categoryService.register(user);
+    public ResponseEntity<Object> register(@RequestBody Category category) {
+        return categoryService.register(category);
     }
 
     @GetMapping("/all")

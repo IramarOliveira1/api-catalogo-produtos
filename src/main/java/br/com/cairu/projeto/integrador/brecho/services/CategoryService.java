@@ -26,7 +26,7 @@ public class CategoryService {
 
             categoryRepository.save(category);
 
-            return ResponseEntity.status(201).body(new GenericResponseDTO("Categoria cadastrado com sucesso!"));
+            return ResponseEntity.status(201).body(new GenericResponseDTO("Categoria cadastrada com sucesso!"));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
@@ -64,7 +64,7 @@ public class CategoryService {
 
             categoryRepository.save(categoryUpdate);
 
-            return ResponseEntity.status(200).body(new GenericResponseDTO("Categoria atualizado com sucesso!"));
+            return ResponseEntity.status(200).body(new GenericResponseDTO("Categoria atualizada com sucesso!"));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
