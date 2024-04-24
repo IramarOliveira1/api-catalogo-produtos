@@ -40,11 +40,11 @@ public class Product {
     @Column(nullable = false)
     private Boolean isActive;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_file", nullable = false, referencedColumnName = "id")
     private File file;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_category", nullable = false, referencedColumnName = "id")
     private Category category;
 }
