@@ -6,6 +6,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,14 +37,14 @@ public class ProductService {
 
             ArrayList<String> name = this.uploadImage(images);
 
-            // product.setCategory(product.getCategory());
-            // product.setFile(product.getFile());
-
-            // System.out.println(product);
+            // System.out.println(testando);
+            // for (Map.Entry<String, String> teste : testando.entrySet()) {
+            //     System.out.println(teste.getValue());
+            // }
 
             // productRepository.save(product);
 
-            return ResponseEntity.status(201).body(new GenericResponseDTO("Categoria cadastrada com sucesso!"));
+            return ResponseEntity.status(201).body(new GenericResponseDTO("Produto cadastrado com sucesso!"));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
@@ -67,7 +69,8 @@ public class ProductService {
 
             Timestamp nameFile = new Timestamp(System.currentTimeMillis() + 100);
 
-            Files.write(Paths.get(path + pathImage + nameFile.getTime() + "." + extension), image.getBytes());
+            // Files.write(Paths.get(path + pathImage + nameFile.getTime() + "." +
+            // extension), image.getBytes());
 
             nameImage.add("public/image/" + nameFile.getTime() + "." + extension);
         }
