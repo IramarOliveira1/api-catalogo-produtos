@@ -43,8 +43,11 @@ public class Product {
     @Column(nullable = false)
     private Boolean isActive;
     
-    @OneToMany(mappedBy = "product")
-    private List<File> files;
+    // @OneToMany
+    // private List<File> files;
+    
+    // @OneToMany(mappedBy = "product")
+    // private List<File> files;
     
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_category", nullable = false, referencedColumnName = "id")

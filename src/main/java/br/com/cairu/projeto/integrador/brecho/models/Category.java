@@ -31,6 +31,6 @@ public class Category {
     @Column(nullable = false, unique = true, columnDefinition = "Varchar(80)")
     private String name;
 
-    @OneToMany(mappedBy = "category")
-    private List<Product> products;
+    // @OneToMany(mappedBy = "category")
+    // private List<Product> products;
 }

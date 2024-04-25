@@ -1,7 +1,5 @@
 package br.com.cairu.projeto.integrador.brecho.models;
 
-import java.util.List;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,11 +31,12 @@ public class File {
     @Column(nullable = false)
     private String url;
 
-    @Column(nullable = false, columnDefinition = "Varchar(80)")
-    private String name;
-
-    
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_product", nullable = false, referencedColumnName = "id")
     private Product product;
+
+    public File(String url, Product product) {
+        this.url = url;
+        this.product = product;
+    }
 }
