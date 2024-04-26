@@ -1,5 +1,7 @@
 package br.com.cairu.projeto.integrador.brecho.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,8 +33,9 @@ public class File {
     @Column(nullable = false)
     private String url;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "id_product", nullable = false, referencedColumnName = "id")
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JsonBackReference
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     public File(String url, Product product) {

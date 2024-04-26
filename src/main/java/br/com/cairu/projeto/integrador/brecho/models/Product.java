@@ -2,6 +2,8 @@ package br.com.cairu.projeto.integrador.brecho.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,14 +44,12 @@ public class Product {
 
     @Column(nullable = false)
     private Boolean isActive;
-    
-    // @OneToMany
-    // private List<File> files;
-    
-    // @OneToMany(mappedBy = "product")
-    // private List<File> files;
-    
+
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "id_category", nullable = false, referencedColumnName = "id")
+    @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
     private Category category;
+
+    @OneToMany(mappedBy = "product")
+    @JsonManagedReference
+    private List<File> files;
 }

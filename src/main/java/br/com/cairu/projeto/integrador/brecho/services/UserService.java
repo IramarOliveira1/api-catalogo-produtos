@@ -67,7 +67,7 @@ public class UserService {
     public ResponseEntity<Object> delete(Long id) {
         userRepository.deleteById(id);
 
-        return ResponseEntity.status(200).body(new GenericResponseDTO("Usuário deletado com sucesso!"));
+        return ResponseEntity.status(200).body(new GenericResponseDTO("Usuário excluído com sucesso!"));
     }
 
     public ResponseEntity<Object> update(Long id, User user) {

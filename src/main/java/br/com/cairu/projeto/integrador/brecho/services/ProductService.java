@@ -15,9 +15,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.cairu.projeto.integrador.brecho.dtos.generic.GenericResponseDTO;
-import br.com.cairu.projeto.integrador.brecho.dtos.product.ProductResponseDTO;
+import br.com.cairu.projeto.integrador.brecho.dtos.product.ProductRequestDTO;
+import br.com.cairu.projeto.integrador.brecho.models.Category;
 import br.com.cairu.projeto.integrador.brecho.models.File;
 import br.com.cairu.projeto.integrador.brecho.models.Product;
+import br.com.cairu.projeto.integrador.brecho.repositories.CategoryRepository;
 import br.com.cairu.projeto.integrador.brecho.repositories.FileRepository;
 import br.com.cairu.projeto.integrador.brecho.repositories.ProductRepository;
 
@@ -29,6 +31,9 @@ public class ProductService {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     private final String pathImage = "\\src\\main\\resources\\static\\public\\images\\";
 
@@ -55,6 +60,41 @@ public class ProductService {
         }
     }
 
+    public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images) {
+        try {
+
+            List<File> files = fileRepository.findByProductId(id);
+
+            Category category = categoryRepository.findById(data.category().getId()).get();
+
+            Product product = productRepository.findById(id).get();
+
+            this.deleteImage(files);
+
+            ArrayList<String> urlImages = this.uploadImage(images);
+
+            product.setName(data.name());
+            product.setDescription(data.description());
+            product.setPrice(data.price());
+            product.setIsActive(data.isActive());
+            product.setCategory(category);
+
+            productRepository.save(product);
+
+            for (File file : files) {
+                fileRepository.deleteById(file.getId());
+            }
+
+            for (String url : urlImages) {
+                fileRepository.save(new File(url, product));
+            }
+
+            return ResponseEntity.status(201).body(new GenericResponseDTO("Produto atualizado com sucesso!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
+        }
+    }
+
     public ArrayList<String> uploadImage(ArrayList<MultipartFile> images) throws IOException {
 
         java.io.File currentPath = new java.io.File("");
@@ -75,7 +115,7 @@ public class ProductService {
             Files.write(Paths.get(path + this.pathImage + nameFile.getTime() + "." +
                     extension), image.getBytes());
 
-            nameImage.add("public/image/" + nameFile.getTime() + "." + extension);
+            nameImage.add("public/images/" + nameFile.getTime() + "." + extension);
         }
 
         return nameImage;
@@ -83,8 +123,39 @@ public class ProductService {
 
     public ResponseEntity<Object> all() {
         List<Product> products = productRepository.findAll();
-        // List<ProductResponseDTO> products = productRepository.findAllByOrderByIdDesc();
 
         return ResponseEntity.status(200).body(products);
+    }
+
+    public ResponseEntity<Object> delete(Long id) {
+        try {
+            List<File> files = fileRepository.findByProductId(id);
+
+            this.deleteImage(files);
+
+            productRepository.deleteById(id);
+
+            return ResponseEntity.status(200).body(new GenericResponseDTO("Produto excluído com sucesso!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
+        }
+    }
+
+    public void deleteImage(List<File> files) {
+        try {
+
+            java.io.File currentPath = new java.io.File("");
+            String path = currentPath.getAbsolutePath();
+
+            for (File file : files) {
+                if (Files.exists(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()))) {
+                    Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()));
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 }

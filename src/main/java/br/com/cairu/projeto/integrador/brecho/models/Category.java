@@ -1,13 +1,10 @@
 package br.com.cairu.projeto.integrador.brecho.models;
 
-import java.util.List;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,7 +27,4 @@ public class Category {
 
     @Column(nullable = false, unique = true, columnDefinition = "Varchar(80)")
     private String name;
-
-    // @OneToMany(mappedBy = "category")
-    // private List<Product> products;
 }
