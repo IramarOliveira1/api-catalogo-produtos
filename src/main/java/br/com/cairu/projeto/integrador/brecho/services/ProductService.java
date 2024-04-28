@@ -60,6 +60,18 @@ public class ProductService {
         }
     }
 
+    public ResponseEntity<Object> all() {
+        List<Product> products = productRepository.findAll();
+
+        return ResponseEntity.status(200).body(products);
+    }
+
+    public ResponseEntity<Object> index(Long id) {
+        Product product = productRepository.findById(id).get();
+
+        return ResponseEntity.status(200).body(product);
+    }
+
     public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images) {
         try {
 
@@ -95,6 +107,39 @@ public class ProductService {
         }
     }
 
+    public ResponseEntity<Object> delete(Long id) {
+        try {
+            List<File> files = fileRepository.findByProductId(id);
+
+            this.deleteImage(files);
+
+            fileRepository.deleteAll(files);
+
+            productRepository.deleteById(id);
+
+            return ResponseEntity.status(200).body(new GenericResponseDTO("Produto excluído com sucesso!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
+        }
+    }
+
+    public void deleteImage(List<File> files) {
+        try {
+
+            java.io.File currentPath = new java.io.File("");
+            String path = currentPath.getAbsolutePath();
+
+            for (File file : files) {
+                if (Files.exists(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()))) {
+                    Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()));
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public ArrayList<String> uploadImage(ArrayList<MultipartFile> images) throws IOException {
 
         java.io.File currentPath = new java.io.File("");
@@ -121,41 +166,4 @@ public class ProductService {
         return nameImage;
     }
 
-    public ResponseEntity<Object> all() {
-        List<Product> products = productRepository.findAll();
-
-        return ResponseEntity.status(200).body(products);
-    }
-
-    public ResponseEntity<Object> delete(Long id) {
-        try {
-            List<File> files = fileRepository.findByProductId(id);
-
-            this.deleteImage(files);
-
-            productRepository.deleteById(id);
-
-            return ResponseEntity.status(200).body(new GenericResponseDTO("Produto excluído com sucesso!"));
-        } catch (Exception e) {
-            return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
-        }
-    }
-
-    public void deleteImage(List<File> files) {
-        try {
-
-            java.io.File currentPath = new java.io.File("");
-            String path = currentPath.getAbsolutePath();
-
-            for (File file : files) {
-                if (Files.exists(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()))) {
-                    Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()));
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-
-    }
 }

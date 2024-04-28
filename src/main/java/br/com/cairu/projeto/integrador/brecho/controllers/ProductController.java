@@ -36,6 +36,11 @@ public class ProductController {
         return productService.all();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> index(@PathVariable("id") Long id) {
+        return productService.index(id);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         return productService.delete(id);
@@ -46,5 +51,4 @@ public class ProductController {
             @RequestPart("images") ArrayList<MultipartFile> images) {
         return productService.update(id, data, images);
     }
-
 }
