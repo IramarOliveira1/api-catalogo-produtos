@@ -166,4 +166,10 @@ public class ProductService {
         return nameImage;
     }
 
+    public ResponseEntity<Object> getByCategory(String categoryName) {
+        List<Product> products = productRepository.findByCategoryName(categoryName);
+
+        return ResponseEntity.status(200).body(products);
+    }
+
 }

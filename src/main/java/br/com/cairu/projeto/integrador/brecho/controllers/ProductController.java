@@ -41,6 +41,11 @@ public class ProductController {
         return productService.index(id);
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<Object> productsByCategory(@PathVariable String category) {
+        return productService.getByCategory(category);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) {
         return productService.delete(id);
