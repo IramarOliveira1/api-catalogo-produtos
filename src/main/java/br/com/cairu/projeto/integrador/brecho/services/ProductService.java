@@ -166,8 +166,8 @@ public class ProductService {
         return nameImage;
     }
 
-    public ResponseEntity<Object> getByCategory(String categoryName) {
-        List<Product> products = productRepository.findByCategoryName(categoryName);
+    public ResponseEntity<Object> getByCategory(Long category_id) {
+        List<Product> products = productRepository.findByCategoryId(category_id);
 
         return ResponseEntity.status(200).body(products);
     }

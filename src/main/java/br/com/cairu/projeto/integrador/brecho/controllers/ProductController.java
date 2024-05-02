@@ -41,9 +41,9 @@ public class ProductController {
         return productService.index(id);
     }
 
-    @GetMapping("/category/{category}")
-    public ResponseEntity<Object> productsByCategory(@PathVariable String category) {
-        return productService.getByCategory(category);
+    @GetMapping("/category/{id}")
+    public ResponseEntity<Object> productsByCategory(@PathVariable("id") Long category_id) {
+        return productService.getByCategory(category_id);
     }
 
     @DeleteMapping("/{id}")

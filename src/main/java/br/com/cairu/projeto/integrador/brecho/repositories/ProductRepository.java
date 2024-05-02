@@ -9,7 +9,6 @@ import br.com.cairu.projeto.integrador.brecho.models.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findAllByOrderByIdDesc();
-    // List<Product> findByProductId();
 
-    List<Product> findByCategoryName(String categoryName);
+    List<Product> findByCategoryId(Long category_id);
 }
