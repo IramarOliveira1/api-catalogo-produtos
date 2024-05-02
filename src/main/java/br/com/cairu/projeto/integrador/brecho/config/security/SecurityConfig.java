@@ -1,16 +1,29 @@
-package br.com.cairu.projeto.integrador.brecho.config;
+package br.com.cairu.projeto.integrador.brecho.config.security;
 
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${api.security.token.secret.public}")
+    private RSAPublicKey secretPublic;
+
+    @Value("${api.security.token.secret.private}")
+    private RSAPrivateKey secretPriv;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -21,6 +34,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/user/{id}").permitAll()
                 .requestMatchers(HttpMethod.PUT, "/user/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/user/register").permitAll()
+                .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
                 .requestMatchers(HttpMethod.GET, "/category/{id}").permitAll()
                 .requestMatchers(HttpMethod.GET, "/category/all").permitAll()
                 .requestMatchers(HttpMethod.DELETE, "/category/{id}").permitAll()
@@ -33,9 +47,18 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/product/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/product/category/{id}").permitAll()
                 .anyRequest().authenticated())
+                .httpBasic(Customizer.withDefaults())
+                .oauth2ResourceServer(
+                        conf -> conf.jwt(Customizer.withDefaults()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return httpSecurity.build();
     }
+
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }

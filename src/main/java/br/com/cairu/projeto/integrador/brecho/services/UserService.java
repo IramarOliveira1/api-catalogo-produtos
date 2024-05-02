@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.com.cairu.projeto.integrador.brecho.config.security.TokenService;
 import br.com.cairu.projeto.integrador.brecho.dtos.generic.GenericResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.user.UserResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.models.User;
@@ -18,6 +20,9 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private TokenService jwtService;
 
     public ResponseEntity<Object> register(User user) {
         try {
