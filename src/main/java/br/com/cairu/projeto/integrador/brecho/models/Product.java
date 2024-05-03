@@ -46,7 +46,7 @@ public class Product {
     private Boolean isActive;
 
     @Column(nullable = false)
-    private Boolean countClick;
+    private int countClick;
 
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
