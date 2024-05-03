@@ -5,12 +5,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import br.com.cairu.projeto.integrador.brecho.config.security.TokenService;
 import br.com.cairu.projeto.integrador.brecho.dtos.generic.GenericResponseDTO;
+import br.com.cairu.projeto.integrador.brecho.dtos.user.LoginRequestDTO;
+import br.com.cairu.projeto.integrador.brecho.dtos.user.LoginResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.user.UserResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.models.User;
 import br.com.cairu.projeto.integrador.brecho.repositories.UserRepository;
@@ -22,7 +24,10 @@ public class UserService {
     private UserRepository userRepository;
 
     @Autowired
-    private TokenService jwtService;
+    private TokenService tokenService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public ResponseEntity<Object> register(User user) {
         try {
@@ -39,9 +44,7 @@ public class UserService {
                 throw new Exception("Telefone já existe!");
             }
 
-            String encryptedPassword = new BCryptPasswordEncoder().encode(user.getPassword());
-
-            user.setPassword(encryptedPassword);
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             user.setEmail(user.getEmail().toLowerCase().trim());
 
             userRepository.save(user);
@@ -107,4 +110,23 @@ public class UserService {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
     }
+
+    public ResponseEntity<Object> login(LoginRequestDTO userDTO) {
+        try {
+            User user = userRepository.findByEmail(userDTO.email())
+                    .orElseThrow(() -> new Exception("email ou senha inválidos!"));
+
+            if (passwordEncoder.matches(userDTO.password(), user.getPassword())) {
+                String token = this.tokenService.generateToken(user);
+
+                return ResponseEntity.ok(new LoginResponseDTO(user.getName(), user.isAdmin(), token));
+            }
+
+            return ResponseEntity.status(400).body(new GenericResponseDTO("email ou senha inválidos!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
+        }
+
+    }
+
 }
