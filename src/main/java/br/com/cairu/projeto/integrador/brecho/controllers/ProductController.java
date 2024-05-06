@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.com.cairu.projeto.integrador.brecho.dtos.product.ProductRequestDTO;
+import br.com.cairu.projeto.integrador.brecho.models.Product;
 import br.com.cairu.projeto.integrador.brecho.services.ProductService;
 
 @RestController
@@ -55,5 +57,9 @@ public class ProductController {
     public ResponseEntity<Object> update(@PathVariable("id") Long id, @RequestPart("data") ProductRequestDTO data,
             @RequestPart("images") ArrayList<MultipartFile> images) {
         return productService.update(id, data, images);
+    }
+    @PostMapping("/filter")
+    public ResponseEntity<Object> filter(@RequestBody Product name) {
+        return productService.filter(name);
     }
 }

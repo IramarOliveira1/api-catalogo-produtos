@@ -32,6 +32,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/product/{id}").permitAll()
                 .requestMatchers(HttpMethod.POST, "/product/register").permitAll()
                 .requestMatchers(HttpMethod.GET, "/product/category/{id}").permitAll()
+                .requestMatchers(HttpMethod.POST, "/product/filter").permitAll()
                 .anyRequest().authenticated())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
