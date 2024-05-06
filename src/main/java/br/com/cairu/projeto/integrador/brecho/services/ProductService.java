@@ -48,6 +48,7 @@ public class ProductService {
 
             ArrayList<String> urlImages = this.uploadImage(images);
 
+            product.setCountClick(0);
             productRepository.save(product);
 
             for (String url : urlImages) {
@@ -171,4 +172,11 @@ public class ProductService {
 
         return ResponseEntity.status(200).body(products);
     }
+
+    public ResponseEntity<Object> filter(Product product) {
+        List<Product> products = productRepository.findByNameLike("%" + product.getName() + "%");
+
+        return ResponseEntity.status(200).body(products);
+    }
+
 }
