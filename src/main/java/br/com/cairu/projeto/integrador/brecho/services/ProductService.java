@@ -48,7 +48,6 @@ public class ProductService {
 
             ArrayList<String> urlImages = this.uploadImage(images);
 
-            product.setCountClick(0);
             productRepository.save(product);
 
             for (String url : urlImages) {
