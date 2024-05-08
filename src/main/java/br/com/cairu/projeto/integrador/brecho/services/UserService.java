@@ -1,7 +1,6 @@
 package br.com.cairu.projeto.integrador.brecho.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -63,12 +62,12 @@ public class UserService {
     }
 
     public ResponseEntity<Object> index(Long id) {
-        Optional<User> user = userRepository.findById(id);
+        User user = userRepository.findById(id).get();
 
         UserResponseDTO userResponseRecord = new UserResponseDTO(
-                user.get().getId(), user.get().getName(),
-                user.get().getEmail(), user.get().getCpf(),
-                user.get().getPhone(), user.get().isAdmin());
+                user.getId(), user.getName(),
+                user.getEmail(), user.getCpf(),
+                user.getPhone(), user.isAdmin());
 
         return ResponseEntity.status(200).body(userResponseRecord);
     }
