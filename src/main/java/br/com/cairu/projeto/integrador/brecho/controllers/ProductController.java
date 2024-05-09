@@ -58,8 +58,14 @@ public class ProductController {
             @RequestPart("images") ArrayList<MultipartFile> images) {
         return productService.update(id, data, images);
     }
+
     @PostMapping("/filter")
     public ResponseEntity<Object> filter(@RequestBody Product name) {
         return productService.filter(name);
+    }
+
+    @GetMapping("/home/all")
+    public ResponseEntity<Object> home() {
+        return productService.home();
     }
 }
