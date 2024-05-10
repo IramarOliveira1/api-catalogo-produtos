@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.cairu.projeto.integrador.brecho.dtos.generic.GenericResponseDTO;
+import br.com.cairu.projeto.integrador.brecho.dtos.product.HomeResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.product.ProductRequestDTO;
 import br.com.cairu.projeto.integrador.brecho.models.Category;
 import br.com.cairu.projeto.integrador.brecho.models.File;
@@ -102,7 +103,7 @@ public class ProductService {
                 fileRepository.save(new File(url, product));
             }
 
-            return ResponseEntity.status(201).body(new GenericResponseDTO("Produto atualizado com sucesso!"));
+            return ResponseEntity.status(200).body(new GenericResponseDTO("Produto atualizado com sucesso!"));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
@@ -179,4 +180,9 @@ public class ProductService {
         return ResponseEntity.status(200).body(products);
     }
 
+    public ResponseEntity<Object> home() {
+        List<HomeResponseDTO> products = productRepository.countByProductAndCategory();
+
+        return ResponseEntity.status(200).body(products);
+    } 
 }
