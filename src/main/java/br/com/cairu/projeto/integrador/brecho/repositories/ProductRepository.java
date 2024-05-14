@@ -16,6 +16,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByNameLike(String name);
 
-    @Query("SELECT  NEW br.com.cairu.projeto.integrador.brecho.dtos.product.HomeResponseDTO(p.name, p.countClick, p.files, (SELECT COUNT(*) FROM product) AS totalProduct, (SELECT COUNT(*) FROM category) AS totalCategory) FROM product p  WHERE p.isActive = true GROUP BY p.name ORDER BY p.countClick DESC LIMIT 7")
+    @Query("SELECT  NEW br.com.cairu.projeto.integrador.brecho.dtos.product.HomeResponseDTO(p.name, p.countClick, p.files, (SELECT COUNT(*) FROM product) AS totalProduct, (SELECT COUNT(*) FROM category) AS totalCategory) FROM product p  WHERE p.isActive = true GROUP BY p.name ORDER BY p.countClick DESC LIMIT 15")
     List<HomeResponseDTO> countByProductAndCategory();
 }

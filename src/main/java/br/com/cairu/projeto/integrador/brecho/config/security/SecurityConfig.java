@@ -21,16 +21,22 @@ public class SecurityConfig {
     @Autowired
     SecurityFilter securityFilter;
 
+    String[] staticResources = {
+            "/public/**",
+    };
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity.authorizeHttpRequests(authorize -> authorize
+                .requestMatchers(staticResources).permitAll()
                 .requestMatchers(HttpMethod.GET, "/user/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/user/all").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE, "/user/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/user/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/user/register").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/product/home/all").permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
