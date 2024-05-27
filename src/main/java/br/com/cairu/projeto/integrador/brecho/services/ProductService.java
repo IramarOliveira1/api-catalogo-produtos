@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +64,15 @@ public class ProductService {
     }
 
     public ResponseEntity<Object> all() {
-        List<Product> products = productRepository.findAll();
+        HashMap<String, Object> objects = new HashMap<>();
 
-        return ResponseEntity.status(200).body(products);
+        List<Product> products = productRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+
+        objects.put("products", products);
+        objects.put("categories", categories);
+
+        return ResponseEntity.status(200).body(objects);
     }
 
     public ResponseEntity<Object> index(Long id) {

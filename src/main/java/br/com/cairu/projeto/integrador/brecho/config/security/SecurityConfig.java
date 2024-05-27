@@ -36,7 +36,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.PUT, "/user/{id}").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/user/register").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/user/login").permitAll()
-                .requestMatchers(HttpMethod.GET, "/product/home/all").permitAll()
                 .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
