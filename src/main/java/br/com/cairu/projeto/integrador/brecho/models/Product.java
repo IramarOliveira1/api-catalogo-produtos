@@ -36,7 +36,7 @@ public class Product {
     @Column(nullable = false, columnDefinition = "Varchar(80)")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false, columnDefinition = "Decimal(10,2)")

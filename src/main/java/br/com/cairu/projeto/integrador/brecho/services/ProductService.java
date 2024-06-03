@@ -48,10 +48,14 @@ public class ProductService {
 
             product = mapper.readValue(data, product.getClass());
 
-            ArrayList<String> urlImages = this.uploadImage(images);
+            String formatPrice = product.getPrice().substring(0, product.getPrice().length() - 2) + "."
+                    + product.getPrice().substring(product.getPrice().length() - 2);
 
+            product.setPrice(formatPrice);
             product.setCountClick(0);
             productRepository.save(product);
+
+            ArrayList<String> urlImages = this.uploadImage(images);
 
             for (String url : urlImages) {
                 fileRepository.save(new File(url, product));
@@ -75,8 +79,15 @@ public class ProductService {
         return ResponseEntity.status(200).body(objects);
     }
 
-    public ResponseEntity<Object> index(Long id) {
+    public ResponseEntity<Object> index(Long id, String detail) {
         Product product = productRepository.findById(id).get();
+
+        if (detail.equals("detail")) {
+
+            product.setCountClick(product.getCountClick() + 1);
+
+            productRepository.save(product);
+        }
 
         return ResponseEntity.status(200).body(product);
     }
@@ -84,31 +95,38 @@ public class ProductService {
     public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images) {
         try {
 
-            List<File> files = fileRepository.findByProductId(id);
+            System.out.println("cair aqui " + images);
 
-            Category category = categoryRepository.findById(data.category().getId()).get();
+            // List<File> files = fileRepository.findByProductId(id);
 
-            Product product = productRepository.findById(id).get();
+            // Category category =
+            // categoryRepository.findById(data.category().getId()).get();
 
-            this.deleteImage(files);
+            // Product product = productRepository.findById(id).get();
 
-            ArrayList<String> urlImages = this.uploadImage(images);
+            // String formatPrice = data.price().substring(0, data.price().length() - 2) +
+            // "."
+            // + data.price().substring(product.getPrice().length() - 2);
 
-            product.setName(data.name());
-            product.setDescription(data.description());
-            product.setPrice(data.price());
-            product.setIsActive(data.isActive());
-            product.setCategory(category);
+            // this.deleteImage(files);
 
-            productRepository.save(product);
+            // product.setName(data.name());
+            // product.setDescription(data.description());
+            // product.setPrice(formatPrice);
+            // product.setIsActive(data.isActive());
+            // product.setCategory(category);
 
-            for (File file : files) {
-                fileRepository.deleteById(file.getId());
-            }
+            // productRepository.save(product);
 
-            for (String url : urlImages) {
-                fileRepository.save(new File(url, product));
-            }
+            // ArrayList<String> urlImages = this.uploadImage(images);
+
+            // for (File file : files) {
+            // fileRepository.deleteById(file.getId());
+            // }
+
+            // for (String url : urlImages) {
+            // fileRepository.save(new File(url, product));
+            // }
 
             return ResponseEntity.status(200).body(new GenericResponseDTO("Produto atualizado com sucesso!"));
         } catch (Exception e) {
@@ -162,14 +180,18 @@ public class ProductService {
         }
 
         for (MultipartFile image : images) {
-            String extension = com.google.common.io.Files.getFileExtension(image.getOriginalFilename());
 
-            Timestamp nameFile = new Timestamp(System.currentTimeMillis() + 100);
+            System.out.println(image.getName());
+            if (image != null) {
+                String extension = com.google.common.io.Files.getFileExtension(image.getOriginalFilename());
 
-            Files.write(Paths.get(path + this.pathImage + nameFile.getTime() + "." +
-                    extension), image.getBytes());
+                Timestamp nameFile = new Timestamp(System.currentTimeMillis() + 100);
 
-            nameImage.add("public/images/" + nameFile.getTime() + "." + extension);
+                Files.write(Paths.get(path + this.pathImage + nameFile.getTime() + "." +
+                        extension), image.getBytes());
+
+                nameImage.add("public/images/" + nameFile.getTime() + "." + extension);
+            }
         }
 
         return nameImage;
@@ -191,5 +213,5 @@ public class ProductService {
         List<HomeResponseDTO> products = productRepository.countByProductAndCategory();
 
         return ResponseEntity.status(200).body(products);
-    } 
+    }
 }

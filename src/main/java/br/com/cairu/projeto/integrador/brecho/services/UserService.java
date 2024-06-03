@@ -119,7 +119,7 @@ public class UserService {
             if (passwordEncoder.matches(userDTO.password(), user.getPassword())) {
                 String token = this.tokenService.generateToken(user);
 
-                return ResponseEntity.ok(new LoginResponseDTO(user.getName(), user.isAdmin(), token));
+                return ResponseEntity.ok(new LoginResponseDTO(user.getId(), user.getName(), user.isAdmin(), token));
             }
 
             return ResponseEntity.status(400).body(new GenericResponseDTO("email ou senha inválidos!"));
