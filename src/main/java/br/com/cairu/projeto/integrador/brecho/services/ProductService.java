@@ -5,8 +5,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -92,23 +97,62 @@ public class ProductService {
         return ResponseEntity.status(200).body(product);
     }
 
-    public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images) {
+    public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images,
+            List<File> urls) {
         try {
 
-            System.out.println("cair aqui " + images);
+            List<File> files = fileRepository.findByProductId(id);
 
-            // List<File> files = fileRepository.findByProductId(id);
+            Category category = categoryRepository.findById(data.category().getId()).get();
 
-            // Category category =
-            // categoryRepository.findById(data.category().getId()).get();
+            Product product = productRepository.findById(id).get();
 
-            // Product product = productRepository.findById(id).get();
+            String formatPrice = data.price().substring(0, data.price().length() - 2) + "."
+                    + data.price().substring(data.price().length() - 2);
 
-            // String formatPrice = data.price().substring(0, data.price().length() - 2) +
-            // "."
-            // + data.price().substring(product.getPrice().length() - 2);
+            ArrayList<File> arrayList = new ArrayList<>();
 
-            // this.deleteImage(files);
+            // arrayList.addAll(urls);
+
+            // List<File> filteredList = arrayList.stream()
+            //         .filter(item -> files != item)
+            //         .collect(Collectors.toList());
+
+            // System.out.println(files);
+
+            for (int i = 0; i < urls.size(); i++) {
+                for (int j = 0; j < files.size(); j++) {
+                    if (!urls.get(i).getUrl().contains(files.get(j).getUrl())) {
+                        System.out.println("CAIR AQUI");
+                    }
+                }
+            }
+
+            // for (File file : files) {
+                
+            // }
+
+            // System.out.println(filteredList);
+            this.deleteImage(arrayList);
+
+            // List<String> mainList = new ArrayList<>(Arrays.asList("apple", "banana",
+            // "orange", "kiwi", "pear"));
+            // List<String> checkList = new ArrayList<>(Arrays.asList("banana", "kiwi",
+            // "pear"));
+
+            // // Imprimir lista principal original
+            // System.out.println("Original main list: " + mainList);
+
+            // // Imprimir lista de verificação
+            // System.out.println("Check list: " + checkList);
+
+            // // Usar Stream para remover itens da mainList que estão na checkList
+            // List<String> filteredList = mainList.stream()
+            // .filter(item -> !checkList.contains(item))
+            // .collect(Collectors.toList());
+
+            // // Imprimir lista principal após remoção
+            // System.out.println("Main list after removal: " + filteredList);
 
             // product.setName(data.name());
             // product.setDescription(data.description());
@@ -119,6 +163,13 @@ public class ProductService {
             // productRepository.save(product);
 
             // ArrayList<String> urlImages = this.uploadImage(images);
+
+            // if (urls.size() > 0) {
+            // for (File url : urls) {
+            // System.out.println(url.getUrl());
+
+            // }
+            // }
 
             // for (File file : files) {
             // fileRepository.deleteById(file.getId());
@@ -132,6 +183,11 @@ public class ProductService {
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
+    }
+
+    public String getFileName(String filePath) {
+        int index = filePath.lastIndexOf('/');
+        return (index == -1) ? filePath : filePath.substring(index + 1);
     }
 
     public ResponseEntity<Object> delete(Long id) {
@@ -158,7 +214,9 @@ public class ProductService {
 
             for (File file : files) {
                 if (Files.exists(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()))) {
-                    Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()));
+                    System.out.println(file.getUrl());
+                    // Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" +
+                    // file.getUrl()));
                 }
             }
 
@@ -179,10 +237,8 @@ public class ProductService {
             Files.createDirectories(Paths.get(path + this.pathImage));
         }
 
-        for (MultipartFile image : images) {
-
-            System.out.println(image.getName());
-            if (image != null) {
+        if (images != null) {
+            for (MultipartFile image : images) {
                 String extension = com.google.common.io.Files.getFileExtension(image.getOriginalFilename());
 
                 Timestamp nameFile = new Timestamp(System.currentTimeMillis() + 100);
@@ -193,7 +249,6 @@ public class ProductService {
                 nameImage.add("public/images/" + nameFile.getTime() + "." + extension);
             }
         }
-
         return nameImage;
     }
 
