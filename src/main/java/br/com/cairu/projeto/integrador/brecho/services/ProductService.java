@@ -5,12 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +68,16 @@ public class ProductService {
         }
     }
 
-    public ResponseEntity<Object> all() {
+    public ResponseEntity<Object> all(String catalog) {
         HashMap<String, Object> objects = new HashMap<>();
+        List<Product> products = new ArrayList<>();
 
-        List<Product> products = productRepository.findAll();
+        if (catalog.equals("catalog")) {
+            products = productRepository.findByIsActiveTrueOrderByIdDesc();
+        } else {
+            products = productRepository.findAllByOrderByIdDesc();
+        }
+
         List<Category> categories = categoryRepository.findAll();
 
         objects.put("products", products);
@@ -97,8 +99,7 @@ public class ProductService {
         return ResponseEntity.status(200).body(product);
     }
 
-    public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images,
-            List<File> urls) {
+    public ResponseEntity<Object> update(Long id, ProductRequestDTO data, ArrayList<MultipartFile> images) {
         try {
 
             List<File> files = fileRepository.findByProductId(id);
@@ -110,84 +111,44 @@ public class ProductService {
             String formatPrice = data.price().substring(0, data.price().length() - 2) + "."
                     + data.price().substring(data.price().length() - 2);
 
-            ArrayList<File> arrayList = new ArrayList<>();
+            for (File file : files) {
+                fileRepository.deleteById(file.getId());
+            }
 
-            // arrayList.addAll(urls);
+            if (data.urls() != null) {
+                List<File> distinct = files.stream()
+                        .filter(file2 -> data.urls().stream().noneMatch(file1 -> file1.getUrl().equals(file2.getUrl())))
+                        .collect(Collectors.toList());
 
-            // List<File> filteredList = arrayList.stream()
-            //         .filter(item -> files != item)
-            //         .collect(Collectors.toList());
+                files.clear();
+                files.addAll(distinct);
+            }
 
-            // System.out.println(files);
+            this.deleteImage(files);
 
-            for (int i = 0; i < urls.size(); i++) {
-                for (int j = 0; j < files.size(); j++) {
-                    if (!urls.get(i).getUrl().contains(files.get(j).getUrl())) {
-                        System.out.println("CAIR AQUI");
-                    }
+            product.setName(data.name());
+            product.setDescription(data.description());
+            product.setPrice(formatPrice);
+            product.setIsActive(data.isActive());
+            product.setCategory(category);
+            productRepository.save(product);
+
+            ArrayList<String> urlImages = this.uploadImage(images);
+
+            if (data.urls() != null) {
+                for (File url : data.urls()) {
+                    urlImages.add(url.getUrl());
                 }
             }
 
-            // for (File file : files) {
-                
-            // }
-
-            // System.out.println(filteredList);
-            this.deleteImage(arrayList);
-
-            // List<String> mainList = new ArrayList<>(Arrays.asList("apple", "banana",
-            // "orange", "kiwi", "pear"));
-            // List<String> checkList = new ArrayList<>(Arrays.asList("banana", "kiwi",
-            // "pear"));
-
-            // // Imprimir lista principal original
-            // System.out.println("Original main list: " + mainList);
-
-            // // Imprimir lista de verificação
-            // System.out.println("Check list: " + checkList);
-
-            // // Usar Stream para remover itens da mainList que estão na checkList
-            // List<String> filteredList = mainList.stream()
-            // .filter(item -> !checkList.contains(item))
-            // .collect(Collectors.toList());
-
-            // // Imprimir lista principal após remoção
-            // System.out.println("Main list after removal: " + filteredList);
-
-            // product.setName(data.name());
-            // product.setDescription(data.description());
-            // product.setPrice(formatPrice);
-            // product.setIsActive(data.isActive());
-            // product.setCategory(category);
-
-            // productRepository.save(product);
-
-            // ArrayList<String> urlImages = this.uploadImage(images);
-
-            // if (urls.size() > 0) {
-            // for (File url : urls) {
-            // System.out.println(url.getUrl());
-
-            // }
-            // }
-
-            // for (File file : files) {
-            // fileRepository.deleteById(file.getId());
-            // }
-
-            // for (String url : urlImages) {
-            // fileRepository.save(new File(url, product));
-            // }
+            for (String url : urlImages) {
+                fileRepository.save(new File(url, product));
+            }
 
             return ResponseEntity.status(200).body(new GenericResponseDTO("Produto atualizado com sucesso!"));
         } catch (Exception e) {
             return ResponseEntity.status(400).body(new GenericResponseDTO(e.getMessage()));
         }
-    }
-
-    public String getFileName(String filePath) {
-        int index = filePath.lastIndexOf('/');
-        return (index == -1) ? filePath : filePath.substring(index + 1);
     }
 
     public ResponseEntity<Object> delete(Long id) {
@@ -214,9 +175,7 @@ public class ProductService {
 
             for (File file : files) {
                 if (Files.exists(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()))) {
-                    System.out.println(file.getUrl());
-                    // Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" +
-                    // file.getUrl()));
+                    Files.delete(Paths.get(path + "\\src\\main\\resources\\static\\" + file.getUrl()));
                 }
             }
 
@@ -252,20 +211,25 @@ public class ProductService {
         return nameImage;
     }
 
-    public ResponseEntity<Object> getByCategory(Long category_id) {
-        List<Product> products = productRepository.findByCategoryId(category_id);
+    public ResponseEntity<Object> getByCategory(Long category_id, String catalog) {
 
-        return ResponseEntity.status(200).body(products);
-    }
+        List<Product> products = new ArrayList<>();
 
-    public ResponseEntity<Object> filter(Product product) {
-        List<Product> products = productRepository.findByNameLike("%" + product.getName() + "%");
+        if (catalog.equals("catalog")) {
+            products = productRepository.findByCategoryIdAndIsActiveTrue(category_id);
+        System.out.println("CAIR AQUI");
+
+        } else {
+        System.out.println("CAIR else");
+
+            products = productRepository.findByCategoryId(category_id);
+        }
 
         return ResponseEntity.status(200).body(products);
     }
 
     public ResponseEntity<Object> home() {
-        List<HomeResponseDTO> products = productRepository.countByProductAndCategory();
+        List<HomeResponseDTO> products = productRepository.findCategoryProductCounts();
 
         return ResponseEntity.status(200).body(products);
     }
