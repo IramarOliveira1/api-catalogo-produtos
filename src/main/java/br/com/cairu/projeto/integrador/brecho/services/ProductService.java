@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.cairu.projeto.integrador.brecho.dtos.generic.GenericResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.product.HomeResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.product.ProductRequestDTO;
+import br.com.cairu.projeto.integrador.brecho.dtos.product.TotalCountsDTO;
 import br.com.cairu.projeto.integrador.brecho.models.Category;
 import br.com.cairu.projeto.integrador.brecho.models.File;
 import br.com.cairu.projeto.integrador.brecho.models.Product;
@@ -212,16 +213,11 @@ public class ProductService {
     }
 
     public ResponseEntity<Object> getByCategory(Long category_id, String catalog) {
-
         List<Product> products = new ArrayList<>();
 
         if (catalog.equals("catalog")) {
             products = productRepository.findByCategoryIdAndIsActiveTrue(category_id);
-        System.out.println("CAIR AQUI");
-
         } else {
-        System.out.println("CAIR else");
-
             products = productRepository.findByCategoryId(category_id);
         }
 
@@ -229,8 +225,14 @@ public class ProductService {
     }
 
     public ResponseEntity<Object> home() {
-        List<HomeResponseDTO> products = productRepository.findCategoryProductCounts();
+        HashMap<String, Object> objects = new HashMap<>();
 
-        return ResponseEntity.status(200).body(products);
+        List<HomeResponseDTO> products = productRepository.findCategoryProductCounts();
+        TotalCountsDTO counts = productRepository.countTotalProductsAndCategories();
+
+        objects.put("counts", counts);
+        objects.put("products", products);
+
+        return ResponseEntity.status(200).body(objects);
     }
 }
