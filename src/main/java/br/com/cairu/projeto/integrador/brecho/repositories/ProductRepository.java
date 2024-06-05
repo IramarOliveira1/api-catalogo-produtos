@@ -23,6 +23,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT NEW br.com.cairu.projeto.integrador.brecho.dtos.product.TotalCountsDTO(COUNT(p), (SELECT COUNT(c) FROM category c)) FROM product p")
     TotalCountsDTO countTotalProductsAndCategories();
 
-    @Query("SELECT p FROM product p GROUP BY p.name ORDER BY p.countClick DESC LIMIT 15")
+    @Query("SELECT p FROM product p ORDER BY p.countClick DESC LIMIT 15")
     List<Product> findCategoryProduct();
 }

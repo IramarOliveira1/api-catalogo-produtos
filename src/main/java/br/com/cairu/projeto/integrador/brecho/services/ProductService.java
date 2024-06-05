@@ -49,8 +49,14 @@ public class ProductService {
 
             product = mapper.readValue(data, product.getClass());
 
-            String formatPrice = product.getPrice().substring(0, product.getPrice().length() - 2) + "."
-                    + product.getPrice().substring(product.getPrice().length() - 2);
+            String formatPrice = null;
+
+            if (Integer.parseInt(product.getPrice()) > 9) {
+                formatPrice = product.getPrice().substring(0, product.getPrice().length() - 2) + "."
+                        + product.getPrice().substring(product.getPrice().length() - 2);
+            } else {
+                formatPrice = "0.0" + product.getPrice();
+            }
 
             product.setPrice(formatPrice);
             product.setCountClick(0);
@@ -108,8 +114,15 @@ public class ProductService {
 
             Product product = productRepository.findById(id).get();
 
-            String formatPrice = data.price().substring(0, data.price().length() - 2) + "."
-                    + data.price().substring(data.price().length() - 2);
+
+            String formatPrice = null;
+
+            if (Integer.parseInt(data.price()) > 9) {
+                formatPrice = data.price().substring(0, data.price().length() - 2) + "."
+                        + data.price().substring(data.price().length() - 2);
+            } else {
+                formatPrice = "0.0" + data.price();
+            }
 
             for (File file : files) {
                 fileRepository.deleteById(file.getId());
