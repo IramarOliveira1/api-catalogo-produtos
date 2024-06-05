@@ -45,9 +45,16 @@ public class CategoryService {
     }
 
     public ResponseEntity<Object> delete(Long id) {
-        categoryRepository.deleteById(id);
+        try {
+            categoryRepository.deleteById(id);
 
-        return ResponseEntity.status(200).body(new GenericResponseDTO("Categoria deletada com sucesso!"));
+            return ResponseEntity.status(200).body(new GenericResponseDTO("Categoria deletada com sucesso!"));
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+            return ResponseEntity.status(400)
+                    .body(new GenericResponseDTO(
+                            "Não é possível deletar a categoria pois ela está associada a um ou mais produtos."));
+        }
     }
 
     public ResponseEntity<Object> update(Long id, Category category) {

@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import br.com.cairu.projeto.integrador.brecho.dtos.generic.GenericResponseDTO;
-import br.com.cairu.projeto.integrador.brecho.dtos.product.HomeResponseDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.product.ProductRequestDTO;
 import br.com.cairu.projeto.integrador.brecho.dtos.product.TotalCountsDTO;
 import br.com.cairu.projeto.integrador.brecho.models.Category;
@@ -227,7 +226,7 @@ public class ProductService {
     public ResponseEntity<Object> home() {
         HashMap<String, Object> objects = new HashMap<>();
 
-        List<HomeResponseDTO> products = productRepository.findCategoryProductCounts();
+        List<Product> products = productRepository.findCategoryProduct();
         TotalCountsDTO counts = productRepository.countTotalProductsAndCategories();
 
         objects.put("counts", counts);
